@@ -1,0 +1,71 @@
+/* ==== Rating Stars ==== */
+.stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: 24px;
+    font-family: Times;
+    display: block;
+    padding: 10px 0;
+    position: relative;
+    line-height: 1;
+}
+
+.stars:before {
+    content: "★★★★★";
+    display: inline-block;
+    background: linear-gradient(90deg, #AFB6C2 var(--percent), rgba(175, 182, 194, .3) var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-top: 7px;
+    letter-spacing: -3px;
+}
+
+    .single-ratings .stars:before { padding-top: 0; }
+
+.stars.no-reviews:before { opacity: .6; }
+
+.stars.no-reviews:after {
+    content: "No Reviews";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-30%);
+    left: 0;
+    width: 150px;
+    z-index: 1;
+    font-family: inherit;
+    font-size: .5em;
+    color: #555;
+    line-height: 1;
+    text-align: center;
+}
+
+@media (min-width: 40em) {
+    .stars { font-size: 32px; }
+}
+
+
+
+/* Review Stars */
+
+.single-ratings {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+}
+
+    .single-ratings .stars {
+        padding: 0;
+        margin-right: 15px;
+    }
+
+        .single-ratings .stars:before {
+            background: linear-gradient(90deg, #E8CD82 var(--percent), rgba(232, 205, 130, .3) var(--percent));
+            -webkit-background-clip: text;
+        }
+
+    .single-ratings a {
+        display: inline-block;
+        color: inherit;
+        font-size: .8em;
+        line-height: 1
+    }
