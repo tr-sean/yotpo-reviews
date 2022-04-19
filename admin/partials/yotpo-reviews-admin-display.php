@@ -94,6 +94,8 @@
 
 <?php endif; ?>
 
+<style>#wpfooter { position: relative; }</style>
+
 <div id="up-wrap"></div>
     <h1>Yotpo Reviews</h1>
 
@@ -113,6 +115,7 @@
 
                     <h3>Settings</h3>
                     <p>Update keys and plugin settings.</p>
+                    <p><strong>Please note:</strong> Once your keys are added, they are stored in wp-config.php and <em>not</em> in the WP database.</p>
 
 
         			<form action="options.php" method="post" class="yotpo-reviews-admin-form">
@@ -140,7 +143,7 @@
         			                <label for="yotpo_app_key" class="form-label">Yotpo Secret Key</label>
         			            </th>
         			            <td>
-        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="<?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?>">
+        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="" value="<?php echo YP_SK; ?>"><span style="padding-left: 15px"><?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span>
         			                <p class="description">You can find these keys under the <a href="https://settings.yotpo.com/#/general_settings" target="_blank">general settings</a> in the Yotpo dashboard for the specific store.</p>
         			            </td>
         			        </tr>
@@ -172,6 +175,31 @@
         			            </td>
         			        </tr>
 
+                            <tr>
+                                <th>
+                                    <label class="form-label">Import Orders?</label>
+                                    <p class="description">If you intend on using Yotpo's automated emails, then you'll need to activate this option.</p>
+                                </th>
+                                <?php
+                                    $orders = $options['order_import'];
+
+                                    if ( $orders ) :
+                                        $checked_yes = $orders == 'yes' ? 'checked' : '';
+                                        $checked_no = $orders == 'no' ? 'checked' : '';
+                                    endif;
+                                ?>
+                                <td>
+                                    <label>
+                                        <input class="orders" name="yotpo_reviews_settings[order_import]" value="yes" type="radio" <?php echo $checked_yes ?? ''; ?> required>
+                                        Yes
+                                    </label><br>
+                                    <label>
+                                        <input class="orders" name="yotpo_reviews_settings[order_import]" value="no" type="radio" <?php echo $checked_no ?? ''; ?>>
+                                        No
+                                    </label>
+                                </td>
+                            </tr>
+
         			        <tr>
         			            <th colspan="2">
         			                <h2>WooCommerce API Info</h2>
@@ -182,12 +210,12 @@
 
         			        <tr>
         			            <th><label for="wc_consumer_key" class="form-label">Consumer Key</label></th>
-        			            <td><input id="wc_consumer_key" name="yotpo_reviews_settings[wc_consumer_key]" type="text" class="regular-text" placeholder="<?php echo $options['wc_consumer_key'] == 'Stored' ? 'Consumer key is stored. Add new to update.' : ''; ?>"></td>
+        			            <td><input id="wc_consumer_key" name="yotpo_reviews_settings[wc_consumer_key]" type="text" class="regular-text" value="<?php echo WC_CK; ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_key'] == 'Stored' ? 'Consumer key is stored. Add new to update.' : ''; ?></span></td>
         			        </tr>
 
         			        <tr>
         			            <th><label for="wc_consumer_key" class="form-label">Consumer Secret</label></th>
-        			            <td><input id="wc_consumer_secret" name="yotpo_reviews_settings[wc_consumer_secret]" type="password" class="regular-text" placeholder="<?php echo $options['wc_consumer_secret'] == 'Stored' ? 'Consumer secret is stored. Add new to update.' : ''; ?>"></td>
+        			            <td><input id="wc_consumer_secret" name="yotpo_reviews_settings[wc_consumer_secret]" type="password" class="regular-text" value="<?php echo WC_SK; ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_secret'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span></td>
         			        </tr>
 
         			        <?php do_settings_fields('yotpo_reviews_settings', 'default') ?>

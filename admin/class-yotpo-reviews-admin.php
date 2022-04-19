@@ -129,12 +129,21 @@ class Yotpo_Reviews_Admin {
     public function sanitize_settings( $settings ) {
         $settings['yotpo_app_key']      = sanitize_text_field( $settings['yotpo_app_key'] );
         $settings['product_identifier'] = sanitize_text_field( $settings['product_identifier'] );
+        $settings['order_import']       = sanitize_text_field( $settings['order_import'] );
         $settings['wc_consumer_key']    = sanitize_text_field( $settings['wc_consumer_key'] );
         $settings['wc_consumer_secret'] = sanitize_text_field( $settings['wc_consumer_secret'] );
         $err                            = false;
 
         if ( ! isset( $settings['product_identifier'] ) ) :
             $settings['product_identifier'] = 'product_sku';  // always set checkboxes if they dont exist
+        endif;
+
+        if ( ! isset( $settings['order_import'] ) ) :
+            $settings['order_import'] = 'no';  // always set checkboxes if they dont exist
+        else :
+            $create_wc_webhook = new Yotpo_Reviews_Webhook_Functions();
+            $wc_webhook = $create_wc_webhook->create_wc_webhook();
+            echo '<pre>'; print_r($wc_webhook); echo '</pre>';
         endif;
 
         if ( $err ) :
@@ -180,8 +189,8 @@ class Yotpo_Reviews_Admin {
 
             // Create/update the Yotpo webhook
             if ( $yp_secret ) :
-                $create_webhook = new Yotpo_Reviews_Webhook_Functions();
-                $create_webhook->create_yotpo_webhook();
+                $create_yp_webhook = new Yotpo_Reviews_Webhook_Functions();
+                $create_yp_webhook->create_yotpo_webhook();
             endif;
 
             // Return it empty to be store in DB.

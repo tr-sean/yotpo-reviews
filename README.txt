@@ -5,7 +5,7 @@ Tags: comments, yotpo, woocommerce, product reviews
 Requires at least: 5.0
 Tested up to: 5.9
 Requires PHP: 7.1
-Stable tag: 1.0.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,10 @@ Please see this [Yotpo Help Center article](https://support.yotpo.com/en/article
 Please see the [WooCommerce Documentation](https://woocommerce.com/document/woocommerce-rest-api/).
 
 == Changelog ==
+
+= 1.5.0 =
+* Added in ability to send orders to Yotpo.
+* Kept keys in their input fields so blanks aren't submitted when updating settings.
 
 = 1.0.0 =
 * Initial plugin creation.

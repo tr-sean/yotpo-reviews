@@ -23,9 +23,10 @@ class Yotpo_Reviews_Import {
      * Get Yotpo Auth Token
      *
      * @since     1.0.0
+     * @param     string.  $type        The type of Yotpo API (UGC or Core). Added in 1.5.0.
      * @return    array    $response    The array of the token.
      */
-	public function yotpo_auth_token() {
+	public function yotpo_auth_token( $type = 'ugc') {
 
     	$options = get_option( 'yotpo_reviews_settings' );
         $app_key = $options['yotpo_app_key'] ?? '';
@@ -33,10 +34,30 @@ class Yotpo_Reviews_Import {
 
         if ( !$app_key || !$secret_key ) return;
 
+        // Determine which auth route to take.
+        if ( $type == 'ugc' ) :
+
+        	$url = 'https://api.yotpo.com/oauth/token';
+        	$post_fields = array(
+				'client_id' 	=> $app_key,
+				'client_secret' => $secret_key,
+				'grant_type' 	=> 'client_credentials'
+			);
+
+		elseif ( $type == 'store' ) :
+
+			$url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/access_tokens';
+			$post_fields = array( 'secret' => $secret_key );
+
+		endif;
+
+		$post_fields = json_encode($post_fields);
+
+
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
-			CURLOPT_URL 		   => 'https://api.yotpo.com/oauth/token',
+			CURLOPT_URL 		   => $url,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_ENCODING 	   => '',
 			CURLOPT_MAXREDIRS 	   => 10,
@@ -44,10 +65,10 @@ class Yotpo_Reviews_Import {
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CUSTOMREQUEST  => 'POST',
-			CURLOPT_POSTFIELDS     => array(
-				'client_id' 	=> $app_key,
-				'client_secret' => $secret_key,
-				'grant_type' 	=> 'client_credentials'
+			CURLOPT_POSTFIELDS     => $post_fields,
+			CURLOPT_HTTPHEADER => array(
+			    'Accept: application/json',
+			    'Content-Type: application/json',
 			),
 		));
 
