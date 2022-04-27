@@ -207,8 +207,11 @@ class Yotpo_Reviews_Webhook_Functions {
     	// Line item
     	foreach( $order->line_items as $item ) :
 
+    		$product = wc_get_product($item->product_id);
+    		$sku = $product->get_sku();
+
     		$line_items[] = array(
-    			'external_product_id' => $item->sku,
+    			'external_product_id' => $sku,
     			'quantity' 			  => $item->quantity,
     			'total_price' 		  => $item->total,
     			'subtotal_price' 	  => $item->subtotal
