@@ -33,7 +33,7 @@
 
             // Import->create the reviews
             $create_reviews = new Yotpo_Reviews_Webhook_Functions();
-            $create_reviews = $create_reviews->execute_webhook($_POST['ypr_action']);
+            $create_reviews = $create_reviews->execute_yp_webhook($_POST['ypr_action']);
 
             // List out responses from function
             list( $data, $total_count, $response ) = $create_reviews;

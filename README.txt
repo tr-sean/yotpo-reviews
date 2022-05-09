@@ -5,7 +5,7 @@ Tags: comments, yotpo, woocommerce, product reviews
 Requires at least: 5.0
 Tested up to: 5.9
 Requires PHP: 7.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,9 @@ Please see this [Yotpo Help Center article](https://support.yotpo.com/en/article
 Please see the [WooCommerce Documentation](https://woocommerce.com/document/woocommerce-rest-api/).
 
 == Changelog ==
+
+= 1.5.2 =
+* Fixed issue with incorrect function name causing fatal error.
 
 = 1.5.1 =
 * Made it so order import will use the parent SKU to avoid missing products.
