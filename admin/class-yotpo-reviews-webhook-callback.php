@@ -19,7 +19,7 @@ if ( isset( $_GET['type'] ) && $_GET['type'] == 'wc_webhook' ) :
 
 	// Run order import webhook
 	$data = file_get_contents("php://input");
-    $run_wc = $run_webhooks->execute_wc_webhook($data);
+	$run_wc = $run_webhooks->execute_wc_webhook($data);
 
 else :
 

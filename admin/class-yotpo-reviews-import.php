@@ -277,6 +277,24 @@ class Yotpo_Reviews_Import {
         // Add the titles to the reviews
         $this->add_review_title();
 
+
+        // BUG FIX: This calls the clear_transients method which resets all averages and arrays.
+        foreach ( $reviews as $review ) : if ( $review['sku'] ) :
+
+            // Determine what identifier to use
+            if ( $options['product_identifier'] == 'product_sku' ) :
+                $prod_id = wc_get_product_id_by_sku( $review['sku'] );
+            else :
+                $prod_id = $review['sku'];
+            endif;
+
+            // Clears and refreshes the comment count for the specific product.
+            do_action( 'wp_update_comment_count', $prod_id);
+
+        endif; endforeach;
+
+
+
 		return array($data, $total_count, $response);
 
 	}
