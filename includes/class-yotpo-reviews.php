@@ -166,6 +166,7 @@ class Yotpo_Reviews {
 		// $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+        $this->loader->add_action( 'init', $plugin_public, 'output_buffer' ); // Allow redirection
         $this->loader->add_filter( 'woocommerce_template_loader_files', $plugin_public, 'get_template_name', 10, 2 );
         $this->loader->add_filter( 'template_include', $plugin_public, 'clear_template_cache', 11 );
         $this->loader->add_filter( 'wc_get_template_part', $plugin_public, 'override_template_parts', 10, 3 );

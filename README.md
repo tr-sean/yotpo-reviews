@@ -6,7 +6,7 @@
 **Requires at least:** 5.0 \
 **Tested up to:** 5.9 \
 **Requires PHP:** 7.1 \
-**Stable tag:** 1.5.3 \
+**Stable tag:** 1.5.4 \
 **License:** GPLv2 or later \
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,10 @@ Please see this [Yotpo Help Center article](https://support.yotpo.com/en/article
 Please see the [WooCommerce Documentation](https://woocommerce.com/document/woocommerce-rest-api/).
 
 ## Changelog
+
+### 1.5.4
+
+* Fixed Cannot modify header information when review is submitted.
 
 ### 1.5.3
 
