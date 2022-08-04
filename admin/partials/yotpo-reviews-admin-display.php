@@ -135,7 +135,7 @@
         			                <label for="yotpo_app_key" class="form-label">Yotpo App Key</label>
         			            </th>
         			            <td>
-        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_app_key]" type="text" class="regular-text" value="<?php echo $options['yotpo_app_key']; ?>">
+        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_app_key]" type="text" class="regular-text" value="<?php echo $options['yotpo_app_key'] ?? ''; ?>">
         			            </td>
         			        </tr>
         			        <tr>
@@ -143,7 +143,7 @@
         			                <label for="yotpo_app_key" class="form-label">Yotpo Secret Key</label>
         			            </th>
         			            <td>
-        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="" value="<?php echo YP_SK; ?>"><span style="padding-left: 15px"><?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span>
+        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="" value="<?php echo YP_SK ?? ''; ?>"><span style="padding-left: 15px"><?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span>
         			                <p class="description">You can find these keys under the <a href="https://settings.yotpo.com/#/general_settings" target="_blank">general settings</a> in the Yotpo dashboard for the specific store.</p>
         			            </td>
         			        </tr>

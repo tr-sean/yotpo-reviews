@@ -204,10 +204,15 @@ class Yotpo_Reviews_Webhook_Functions {
     	// Only send off order if completed
     	if ( $order->status !== 'completed' ) return;
 
-    	// Line item
+        $order_id = $order->id ?? '';
+
+        // Line item
+        $line_items = array();
+        $fulfilled_items = array();
     	foreach( $order->line_items as $item ) :
 
     		$product = wc_get_product($item->product_id);
+            if ( !$product || empty( $product ) ) break;
     		$sku = $product->get_sku();
 
     		$line_items[] = array(
@@ -217,17 +222,22 @@ class Yotpo_Reviews_Webhook_Functions {
     			'subtotal_price' 	  => $item->subtotal
     		);
 
+            $fulfilled_items[] = array(
+                'external_product_id' => $sku,
+                'quantity'            => $item->quantity
+            );
+
     	endforeach;
 
     	// Customer info
-    	$customer_id = $order->customer_id ?? $order->id;
+    	$customer_id = $order->customer_id ?? $order_id;
     	$customer_billing = $order->billing;
     	$customer_shipping = $order->shipping ?? '';
 
     	// Put all the order info together
     	$post_fields = array(
     		'order' => array(
-			    'external_id' 	 => $order->id,
+			    'external_id' 	 => $order_id,
 			    'order_date'  	 => $order->date_created,
 			    'total_price' 	 => $order->total,
 			    'currency'    	 => 'USD',
@@ -260,6 +270,18 @@ class Yotpo_Reviews_Webhook_Functions {
 			    	'province_code' => $customer_shipping->state,
 			    	'country_code'  => $customer_shipping->country,
 			    ),
+                'fulfillments' => array(
+                    array(
+                        'external_id'      => $order_id,
+                        'fulfillment_date' => $order->date_completed,
+                        'status'           => 'success',
+                        'shipment_info'       => array(
+                            'shipment_status'  => 'label_printed',
+                            'tracking_number'  => ''
+                        ),
+                        'fulfilled_items' => $fulfilled_items
+                    )
+                ),
 			    'line_items' => $line_items
 			)
     	);
@@ -271,9 +293,18 @@ class Yotpo_Reviews_Webhook_Functions {
         $auth_token = new Yotpo_Reviews_Import();
         $auth_token = $auth_token->yotpo_auth_token('store');
 
+        // Determine request type
+        if ( metadata_exists( 'post', $order_id, '_yotpo_order_id' ) ) :
+            $request = 'PATCH';
+            $yotpo_order_id = get_post_meta( $order_id, '_yotpo_order_id', true );
+        else :
+            $request = 'POST';
+            $yotpo_order_id = '';
+        endif;
+
         // Send order off to Yotpo
         $curl = curl_init();
-		$url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders';
+		$url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders/' . $yotpo_order_id;
 		curl_setopt_array($curl, array(
 			CURLOPT_URL 		   => $url,
 			CURLOPT_RETURNTRANSFER => true,
@@ -282,7 +313,7 @@ class Yotpo_Reviews_Webhook_Functions {
 			CURLOPT_TIMEOUT 	   => 0,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST  => 'POST',
+			CURLOPT_CUSTOMREQUEST  => $request,
 			CURLOPT_POSTFIELDS     => $post_fields,
 		  	CURLOPT_HTTPHEADER 	   => array(
 			    'Accept: application/json',
@@ -292,10 +323,112 @@ class Yotpo_Reviews_Webhook_Functions {
 		));
 
 		$response = curl_exec($curl);
-
 		curl_close($curl);
-		$response = json_encode($response, true);
-		return $response;
+
+        // file_put_contents('./log_'.date("j.n.Y").'.log', $response . ' - ' . $order_id, FILE_APPEND);
+
+        $response = json_decode($response, true);
+        return $response;
+
+        // $yotpo_id = $response->order->yotpo_id;
+
+        // Add Yotpo Order ID
+        // update_post_meta( $order->id, '_yotpo_order_id', $yotpo_id );
+
+        // Make order fulfilled for Yotpo
+        // $this->yotpo_order_fulfillment($order, $yotpo_id);
+    }
+
+
+
+    public function yotpo_order_fulfillment( $order, $yotpo_id ) {
+
+        if ( empty( $yotpo_id ) || empty( $order ) ) return;
+
+        // $order_response = json_decode(stripslashes($response));
+        // $yotpo_id = $order_response->order->yotpo_id ?? '';
+
+        // if ( !$yotpo_id ) return;
+
+        file_put_contents('./log_'.date("j.n.Y").'.log', $yotpo_id . ' - ' . $order, FILE_APPEND);
+
+        // Line item
+        foreach( $order->line_items as $item ) :
+
+            $product = wc_get_product($item->product_id);
+            $sku = $product->get_sku();
+
+            $fulfilled_items[] = array(
+                'external_product_id' => $sku,
+                'quantity'            => $item->quantity
+            );
+
+        endforeach;
+
+
+        // Tracking number
+        $tracking_number = $order->meta_data;
+
+        $result = null;
+        foreach ($tracking_number as $object) :
+            if (str_contains($object->key, 'shipment-')) :
+                $result = $object;
+                break;
+            endif;
+        endforeach;
+        unset($object);
+        $meta_data = $result ?? false;
+
+        $tracking_number = $meta_data->value->tracking_number ?? '';
+
+
+        // Put all the order info together
+        $post_fields = array(
+            'fulfillment' => array(
+                'external_id'      => $order->id,
+                'fulfillment_date' => $order->date_completed,
+                'status'           => $order->status,
+                'shipment_info'       => array(
+                    'shipment_status'  => 'label_printed',
+                    'tracking_number'  => $tracking_number
+                ),
+                'fulfilled_items' => $fulfilled_items
+            )
+        );
+        $post_fields = json_encode($post_fields);
+
+        // Get all the Yotpo keys
+        $options = get_option( 'yotpo_reviews_settings' );
+        $app_key = $options['yotpo_app_key'] ?? '';
+        $auth_token = new Yotpo_Reviews_Import();
+        $auth_token = $auth_token->yotpo_auth_token('store');
+
+
+        // Create Order Fulfillment
+        $curl = curl_init();
+        $url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders/' . $yotpo_id . '/fulfillments';
+        curl_setopt_array($curl, array(
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POSTFIELDS     => $post_fields,
+            CURLOPT_HTTPHEADER     => array(
+                'Accept: application/json',
+                'Content-Type: application/json',
+                'X-Yotpo-Token: ' . $auth_token['access_token']
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        $response = json_encode($response, true);
+        return $response;
     }
 
 

@@ -143,7 +143,6 @@ class Yotpo_Reviews_Admin {
         else :
             $create_wc_webhook = new Yotpo_Reviews_Webhook_Functions();
             $wc_webhook = $create_wc_webhook->create_wc_webhook();
-            echo '<pre>'; print_r($wc_webhook); echo '</pre>';
         endif;
 
         if ( $err ) :

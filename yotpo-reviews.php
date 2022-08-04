@@ -16,7 +16,7 @@
  * Plugin Name:       Yotpo Reviews
  * Plugin URI:        https://www.seanrsullivan.com
  * Description:       Allows the use of the WooCommerce native reviews using Yotpo.
- * Version:           1.5.4
+ * Version:           1.6.0
  * Author:            Sean Sullivan
  * Author URI:        https://www.seanrsullivan.com
  * License:           GPL-2.0+
@@ -38,7 +38,7 @@ define('YPR_DIR_NAME', basename(YPR_FILE_PATH));
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'YOTPO_REVIEWS_VERSION', '1.5.4' );
+define( 'YOTPO_REVIEWS_VERSION', '1.6.0' );
 
 /**
  * The code that runs during plugin activation.
