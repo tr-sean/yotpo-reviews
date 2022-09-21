@@ -77,14 +77,19 @@
 
         <div class="product-reviews__form-wrapper">
             <div class="text-center">
-                <?php if ( !is_user_logged_in() ) : ?>
+                <?php if ( !is_user_logged_in() ) : // Not logged in ?>
                     <p><a href="<?php bloginfo('url'); ?>/account" class="product-reviews__write-review"><?php esc_html_e( 'You must be logged in to leave a review.', 'woocommerce' ); ?></a></p>
-                <?php elseif ( get_option( 'woocommerce_review_rating_verification_required' ) === 'no' || wc_customer_bought_product( '', $user->ID, $product->get_id() ) ) : ?>
+                <?php elseif ( get_option( 'woocommerce_review_rating_verification_required' ) === 'no' || wc_customer_bought_product( '', $user->ID, $product->get_id() ) ) : // Logged in and has purchased ?>
                     <p><a href="" class="product-reviews__write-review" data-link="review-form"><?php esc_html_e( 'Write a review', 'woocommerce' ); ?></a></p>
-                <?php else : ?>
+                <?php else : // Logged in but has not purchased ?>
                     <p><?php esc_html_e( 'Only logged in customers who have purchased this product may leave a review.', 'woocommerce' ); ?></p>
                 <?php endif; ?>
             </div>
+
+            <?php
+                // Only show form if user is logged in and has purchased
+                if ( get_option( 'woocommerce_review_rating_verification_required' ) === 'no' || wc_customer_bought_product( '', $user->ID, $product->get_id() ) ) :
+            ?>
 
             <div class="product-reviews__form">
 
@@ -133,6 +138,12 @@
                             <label for="content"><?php echo esc_html( 'Review' ); ?></label>
                             <textarea id="content" name="review[content]" required aria-required="true"></textarea>
                         </div>
+
+
+                        <div class="col-md-12 col" style="display: none;">
+                            <label for="fav-color"><?php echo esc_html( 'Favorite Color' ); ?></label>
+                            <input type="text" name="review[color]" id="fav-color" value=""/>
+                        </div>
                     </div>
 
                     <p class="text-center">
@@ -140,6 +151,8 @@
                     </p>
                 </form>
             </div>
+
+            <?php endif; ?>
         </div>
     </div>
 </div>
