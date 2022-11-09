@@ -212,8 +212,9 @@
             // Get array of results
         	$review = $_POST['review'];
 
+
             // Anti-spam effort
-            if ( isset( $review['color'] ) ) return;
+            if ( !empty( $review['color'] ) ) return;
 
     	    // Gather form data
     	    $post_fields = array(

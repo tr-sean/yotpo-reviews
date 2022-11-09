@@ -143,7 +143,7 @@
         			                <label for="yotpo_app_key" class="form-label">Yotpo Secret Key</label>
         			            </th>
         			            <td>
-        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="" value="<?php echo YP_SK ?? ''; ?>"><span style="padding-left: 15px"><?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span>
+        			                <input id="yotpo_app_key" name="yotpo_reviews_settings[yotpo_secret_key]" type="password" class="regular-text" placeholder="" value="<?php echo defined('YP_SK') ? YP_SK : define('YP_SK', ''); ?>"><span style="padding-left: 15px"><?php echo $options['yotpo_secret_key'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span>
         			                <p class="description">You can find these keys under the <a href="https://settings.yotpo.com/#/general_settings" target="_blank">general settings</a> in the Yotpo dashboard for the specific store.</p>
         			            </td>
         			        </tr>
@@ -210,12 +210,12 @@
 
         			        <tr>
         			            <th><label for="wc_consumer_key" class="form-label">Consumer Key</label></th>
-        			            <td><input id="wc_consumer_key" name="yotpo_reviews_settings[wc_consumer_key]" type="text" class="regular-text" value="<?php echo WC_CK; ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_key'] == 'Stored' ? 'Consumer key is stored. Add new to update.' : ''; ?></span></td>
+        			            <td><input id="wc_consumer_key" name="yotpo_reviews_settings[wc_consumer_key]" type="text" class="regular-text" value="<?php echo defined('WC_CK') ? WC_CK : define('WC_CK', ''); ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_key'] == 'Stored' ? 'Consumer key is stored. Add new to update.' : ''; ?></span></td>
         			        </tr>
 
         			        <tr>
         			            <th><label for="wc_consumer_key" class="form-label">Consumer Secret</label></th>
-        			            <td><input id="wc_consumer_secret" name="yotpo_reviews_settings[wc_consumer_secret]" type="password" class="regular-text" value="<?php echo WC_SK; ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_secret'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span></td>
+        			            <td><input id="wc_consumer_secret" name="yotpo_reviews_settings[wc_consumer_secret]" type="password" class="regular-text" value="<?php echo defined('WC_SK') ? WC_SK : define('WC_SK', ''); ?>"><span style="padding-left: 15px"><?php echo $options['wc_consumer_secret'] == 'Stored' ? 'Secret key is stored. Add new to update.' : ''; ?></span></td>
         			        </tr>
 
         			        <?php do_settings_fields('yotpo_reviews_settings', 'default') ?>

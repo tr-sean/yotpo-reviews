@@ -202,7 +202,7 @@ class Yotpo_Reviews_Webhook_Functions {
     	$order = json_decode(stripslashes($data));
 
     	// Only send off order if completed
-    	if ( $order->status !== 'completed' ) return;
+    	if ( isset( $order ) && $order->status !== 'completed' ) return;
 
         $order_id = $order->id ?? '';
 
