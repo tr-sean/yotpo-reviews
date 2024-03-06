@@ -54,7 +54,7 @@ class Yotpo_Reviews_Deactivator {
 
         curl_close($curl);
         $webhooks = $response['response']['webhooks'];
-        $webhook_url = YPR_URL . '/admin/class-yotpo-reviews-webhook-callback.php';
+        $webhook_url = YPR_URL . '/admin/class-yotpo-reviews-webhook-callback.php?type=yp_webhook';
         $key = array_search($webhook_url, array_column($response['response']['webhooks'], 'url'));
 
         echo $webhooks[$key]['id'];

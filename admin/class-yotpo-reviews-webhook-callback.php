@@ -10,21 +10,30 @@
  * @subpackage Yotpo_Reviews/admin
  */
 
-require_once $_SERVER["DOCUMENT_ROOT"] . '/wp-load.php';
-require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-webhook-functions.php';
+if ( isset( $_GET['type'] ) ) :
 
-$run_webhooks = new Yotpo_Reviews_Webhook_Functions();
+    require_once $_SERVER["DOCUMENT_ROOT"] . '/wp-load.php';
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-webhook-functions.php';
 
-if ( isset( $_GET['type'] ) && $_GET['type'] == 'wc_webhook' ) :
+    $run_webhooks = new Yotpo_Reviews_Webhook_Functions();
 
-	// Run order import webhook
-	$data = file_get_contents("php://input");
-    $run_wc = $run_webhooks->execute_wc_webhook($data);
+    if ( $_GET['type'] == 'wc_webhook' ) :
+
+        // Run order import webhook
+        $data = file_get_contents("php://input");
+        if ( $data & !empty( $data ) ) :
+            $run_wc = $run_webhooks->execute_wc_webhook($data);
+        endif;
+
+    elseif ( $_GET['type'] == 'yp_webhook' ) :
+
+        // Run review import webhook
+        $run_yp = $run_webhooks->execute_yp_webhook('webhook');
+
+    endif;
 
 else :
 
-	// Run review import webhook
-	$run_yp = $run_webhooks->execute_yp_webhook('webhook');
+    die('Cannot access directly.');
 
 endif;
-
