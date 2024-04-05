@@ -93,6 +93,7 @@ class Yotpo_Reviews {
 	 * - Yotpo_Reviews_Admin. Defines all hooks for the admin area.
 	 * - Yotpo_Reviews_Import. Defines all hooks for the import process.
 	 * - Yotpo_Reviews_Webhook_Functions. Defines all hooks for the webhook process.
+	 * - Yotpo_Reviews_Crons. Cron things.
 	 * - Yotpo_Reviews_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
@@ -108,6 +109,7 @@ class Yotpo_Reviews {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-admin.php'; // Admin area functions
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-import.php'; // Import functions
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-webhook-functions.php'; // Webhook callback functions
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-yotpo-reviews-crons.php'; // Schedules the imports
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-yotpo-reviews-public.php'; // Public area functions
 
 		$this->loader = new Yotpo_Reviews_Loader();
@@ -142,14 +144,19 @@ class Yotpo_Reviews {
 
 		$plugin_admin = new Yotpo_Reviews_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		// $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		// $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'add_plugin_admin_menu' ); // Add submenu item to Settings
         $this->loader->add_action( 'admin_init', $plugin_admin, 'register_plugin_settings' ); // Add submenu item to Settings
         $this->loader->add_action( 'add_meta_boxes_comment', $plugin_admin, 'add_comment_title_meta_box' ); // Add the title to our admin area, for editing, etc
         $this->loader->add_action( 'edit_comment', $plugin_admin, 'add_comment_title_admin_save' ); // Save our comment (from the admin area)
         $this->loader->add_action( 'load-edit-comments.php', $plugin_admin, 'comment_title_load' ); // Put title in comments list table
         $this->loader->add_action( 'manage_comments_custom_column', $plugin_admin, 'comment_title_column_cb', 10, 2 );
+
+
+		$plugin_admin_hooks = new Yotpo_Reviews_Webhook_Functions( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'yotpo_review_cron', $plugin_admin_hooks, 'execute_import' ); // Create hook for WP scheduled jobs
 
 	}
 

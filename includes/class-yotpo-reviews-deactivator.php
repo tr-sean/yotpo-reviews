@@ -23,41 +23,14 @@
 class Yotpo_Reviews_Deactivator {
 
 	/**
-	 * Short Description. (use period)
+	 * Remove the scheduled import event
 	 *
-	 * Long Description.
-	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
+	 * @return   void
 	 */
-	public static function get_yotpo_webhook() {
+	public static function remove_scheduled_event() {
 
-        // Get all the keys
-        $options = get_option( 'yotpo_reviews_settings' );
-        $app_key = $options['yotpo_app_key'] ?? '';
-        $auth_token = new Yotpo_Reviews_Import();
-        $auth_token = $auth_token->yotpo_auth_token();
-
-        $curl = curl_init();
-        $url = 'https://api.yotpo.com/apps/' . $app_key . '/webhooks?utoken=' . $auth_token['access_token'];
-        curl_setopt_array($curl, array(
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'GET',
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        $webhooks = $response['response']['webhooks'];
-        $webhook_url = YPR_URL . '/admin/class-yotpo-reviews-webhook-callback.php?type=yp_webhook';
-        $key = array_search($webhook_url, array_column($response['response']['webhooks'], 'url'));
-
-        echo $webhooks[$key]['id'];
+        wp_clear_scheduled_hook('yotpo_review_cron', array( 'scheduled' ));
 
 	}
 

@@ -1,128 +1,198 @@
+/* ==========================================================================
+   Settings Form
+   ========================================================================== */
+
 .yotpo-reviews-admin-form { max-width: 90%; }
 
+	#poststuff h2.yp-style {
+		font-size: 17px;
+		padding-left: 0;
+	}
 
-.form-label {
-    display: block;
-    font-size: .9em;
-    font-weight: bold;
-    margin: 25px 0 5px;
-}
+	.form-table td { vertical-align: top; }
 
-    .form-label_required {
-        font-weight: normal;
-        color: #a94442;
-        text-decoration: none !important;
+	.form-label {
+		display: block;
+		font-size: .9em;
+		font-weight: bold;
+		margin: 0 0 5px;
+	}
+
+		.form-label_required {
+			font-weight: normal;
+			color: #a94442;
+			text-decoration: none !important;
+		}
+
+	.formerror {
+		background-color: #f2dede;
+		border:1px solid #dca7a7;
+		color: #a94442;
+		margin-bottom: 20px;
+		padding: 15px;
+	}
+
+		.formerror:last-child { margin-bottom: 0; }
+
+	::placeholder {
+		color: #333;
+		opacity: .9;
+	}
+
+	.form-text {
+		margin-top: .25rem;
+		font-size: .875em;
+		color: #6c757d;
+	}
+
+	fieldset { margin-bottom: 30px; }
+
+	legend {
+		width: 100%;
+		padding: 0;
+		margin: .8rem 0;
+		font-size: calc(1.275rem + .3vw);
+		line-height: inherit;
+	}
+
+	/* Firefox-specific hack to override awkward fieldset styling */
+	.-moz- fieldset { display: table-cell; }
+
+	[type="text"],
+	[type="url"],
+	[type="email"],
+	[type="tel"],
+	[type="search"],
+	[type="password"],
+	textarea {
+		display: block;
+		width: 100%;
+		padding: .375rem .75rem;
+		margin-bottom: 5px;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #212529;
+		background-color: #FFF;
+		background-clip: padding-box;
+		border: 1px solid #CED4DA;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		border-radius: .25rem;
+	}
+
+	select {
+		display: block;
+		width: 100%;
+		padding: .375rem 2.25rem .375rem .75rem;
+		-moz-padding-start: calc(0.75rem - 3px);
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #212529;
+		background-color: #FFF;
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+		background-repeat: no-repeat;
+		background-position: right .75rem center;
+		background-size: 16px 12px;
+		border: 1px solid #CED4DA;
+		border-radius: .25rem;
+		transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+	}
+
+	[type="text"]:focus,
+	[type="url"]:focus,
+	[type="email"]:focus,
+	[type="tel"]:focus,
+	[type="search"]:focus,
+	[type="password"]:focus {
+		color: #212529;
+		background-color: #FFF;
+		border-color: var(--color-blue-light);
+		outline: 0;
+		box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+	}
+
+	/* Remove number arrows in number fields */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	input[type=number] { -moz-appearance:textfield; }
+
+	.helper {
+		font-size: .9em;
+		display: block;
+		font-style: italic;
+		padding-top: .5em
+	}
+
+	@media (min-width: 768px) {
+		.yotpo-reviews-admin-form { max-width: 50%; }
+	}
+
+
+
+
+/* ==========================================================================
+   Loader
+   ========================================================================== */
+
+@keyframes loading_spinner {
+    to {
+        transform: rotate(360deg)
     }
-
-.formerror {
-    background-color: #f2dede;
-    border:1px solid #dca7a7;
-    color: #a94442;
-    margin-bottom: 20px;
-    padding: 15px;
 }
 
-    .formerror:last-child { margin-bottom: 0; }
-
-::placeholder {
-    color: #333;
-    opacity: .9;
+.loading-overlay {
+	display: none;
+    text-align: center;
+    color: #FFF;
+    padding-top: 10px;
+    font-size: .7em;
+    background-color: rgba(0, 0, 0, .5);
+	width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999999999999;
 }
 
-.form-text {
-    margin-top: .25rem;
-    font-size: .875em;
-    color: #6c757d;
+.loading-overlay.loading {
+	display: block;
+    opacity: 1;
+    visibility: visible;
 }
 
-fieldset { margin-bottom: 30px; }
-
-legend {
-    width: 100%;
-    padding: 0;
-    margin: .8rem 0;
-    font-size: calc(1.275rem + .3vw);
-    line-height: inherit;
+.loading-overlay span {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(calc(-50% + 50px));
+	font-size: 24px;
 }
 
-/* Firefox-specific hack to override awkward fieldset styling */
-.-moz- fieldset { display: table-cell; }
-
-[type="text"],
-[type="url"],
-[type="email"],
-[type="tel"],
-[type="search"],
-[type="password"],
-textarea {
-    display: block;
-    width: 100%;
-    padding: .375rem .75rem;
-    margin-bottom: 5px;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    background-color: #FFF;
-    background-clip: padding-box;
-    border: 1px solid #CED4DA;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border-radius: .25rem;
-}
-
-select {
-    display: block;
-    width: 100%;
-    padding: .375rem 2.25rem .375rem .75rem;
-    -moz-padding-start: calc(0.75rem - 3px);
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    background-color: #FFF;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right .75rem center;
-    background-size: 16px 12px;
-    border: 1px solid #CED4DA;
-    border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-
-[type="text"]:focus,
-[type="url"]:focus,
-[type="email"]:focus,
-[type="tel"]:focus,
-[type="search"]:focus,
-[type="password"]:focus {
-    color: #212529;
-    background-color: #FFF;
-    border-color: var(--color-blue-light);
-    outline: 0;
-    box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
-}
-
-/* Remove number arrows in number fields */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] { -moz-appearance:textfield; }
-
-.helper {
-    font-size: .9em;
-    display: block;
-    font-style: italic;
-    padding-top: .5em
-}
-
-@media (min-width: 768px) {
-    .yotpo-reviews-admin-form { max-width: 50%; }
+.loading-overlay.loading:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+	top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border-radius: 50%;
+	border-top: 2px solid #FFF;
+    border-right: 2px solid transparent;
+	animation: loading_spinner .6s linear infinite
 }

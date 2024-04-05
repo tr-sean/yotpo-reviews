@@ -3,9 +3,9 @@ Contributors: gataf
 Donate link: https://www.seanrsullivan.com
 Tags: comments, yotpo, woocommerce, product reviews
 Requires at least: 5.0
-Tested up to: 6.1
-Requires PHP: 7.1
-Stable tag: 1.6.5
+Tested up to: 6.5
+Requires PHP: 8.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,9 +39,13 @@ I was not a fan of how many times the Yotpo embeds were being called on my pages
 
 = How do I use it? =
 
-There are several ways to utilize this plugin. After inputting all of the needed keys, you will need to do an initial import if you have existing reviews on Yotpo. From there you can go in and manually get reviews from the past 24 hours. For a more automated process, each time a review is posted, a webhook from Yotpo is fired which will automatically add any reviews from the previous 24 hours.
+Upon saving your settings, a scheduled event will be created which will run every 24 hours. This will check for new reviews to import from the previous day.
 
-I do suggest going in every now-and-then and manually grabbing reviews just to make sure you have what you need. If you have reviews that are "rejected", the next time an import is run, they will be removed from the WooCommerce reviews.
+In order to get all current reviews, prior to this plugin's installation/activation, you'll need to run the, "Run First Time Import" function by clicking the corresponding button.
+
+If you like, you can go in and manually get reviews from the past 24 hours, by clicking the "Run Manual Import" button.
+
+If you have reviews that are published then “rejected”, the next time an import is run, they will be removed from the WooCommerce reviews.
 
 = Do I need a Yotpo account? =
 
@@ -55,7 +59,20 @@ Please see this [Yotpo Help Center article](https://support.yotpo.com/en/article
 
 Please see the [WooCommerce Documentation](https://woocommerce.com/document/woocommerce-rest-api/).
 
+= Can I update the reviews template? =
+
+The styling for this plugin is basic, as it would be expected for you to update the styling to match your theme. You can override the template by copying the template file from the plugin folder to your theme's WooCommerce template override folder (example: `wp-content/themes/your-theme/woocommerce/`). These files are located at: `wp-content/plugins/yotpo-reviews/templates/public/templates/`.
+
 == Changelog ==
+
+=2.0.0=
+* Fixed import stuff so it actually works.
+* Removed the reliance on Yotpo webhooks to trigger review import, since they pretty much didn't work.
+* Set up `wp_schedule_event` to run on a daily basis, upon settings save, to check and import reviews.
+* Utilized `wp_schedule_single_event` function when using the first time or manually run actions.
+* Separated admin display into several files for easier editing.
+* Updated WP and PHP versions.
+* General clean-up.
 
 =1.6.5=
 * Added additional conditional to order import skip statement.

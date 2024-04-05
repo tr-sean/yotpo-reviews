@@ -122,6 +122,7 @@ class Yotpo_Reviews_Admin {
     /**
      * Sanitize fields and store WC API keys
      *
+     * @since     2.0.0    Removed Yotpo webhook creation
      * @since     1.0.0
      * @param     array    $settings    The settings from the plugin form.
      * @return    array    $settings    Sanitized settings
@@ -186,20 +187,14 @@ class Yotpo_Reviews_Admin {
         	// Write to wp-config
         	$this->wp_config_add_directive( $wc_key, $wc_secret, $yp_secret ); // Write to wp-config
 
-            // Create/update the Yotpo webhook
-            if ( $yp_secret ) :
-                $create_yp_webhook = new Yotpo_Reviews_Webhook_Functions();
-                $create_yp_webhook->create_yotpo_webhook();
-            endif;
-
             // Return it empty to be store in DB.
-            $settings['wc_consumer_key'] = 'Stored';
+            $settings['wc_consumer_key']    = 'Stored';
             $settings['wc_consumer_secret'] = 'Stored';
-            $settings['yotpo_secret_key'] = 'Stored';
+            $settings['yotpo_secret_key']   = 'Stored';
 
         endif;
 
-        return $settings;
+		return $settings;
     }
 
 
@@ -421,6 +416,43 @@ class Yotpo_Reviews_Admin {
 	    endforeach;
 
 	    return count( $results );
+	}
+
+
+
+
+    /**
+     * Get table rows for logs table
+     *
+     * @since     2.0.0
+     * @return    string     $logs      Rows for the logs table
+     */
+    public static function display_logs_table() {
+    	global $wpdb;
+		$wpdb->show_errors();
+
+		$id   = 'id';
+		$sql  = $wpdb->prepare("SELECT * FROM `wp_yotpo_review_log` ORDER BY %s ASC", $id);
+		$logs = $wpdb->get_results( $sql , ARRAY_A );
+
+		return $logs;
+	}
+
+
+
+
+    /**
+     * Clear the logs table
+     *
+     * @since     2.0.0
+     * @return    string     Success message to display from AJAX result
+     */
+    public static function clear_logs_table() {
+    	// Delete data from table
+		global $wpdb;
+		$wpdb->query("TRUNCATE TABLE `wp_yotpo_review_log`");
+
+		return 'Table has been cleared.';
 	}
 
 }

@@ -4,6 +4,7 @@
  * The admin-specific functionality of the plugin.
  *
  * @link       https://www.seanrsullivan.com
+ * @since      2.0.0     Removed Yotpo webhook creation
  * @since      1.0.0
  *
  * @package    Yotpo_Reviews
@@ -23,69 +24,23 @@
 
 class Yotpo_Reviews_Webhook_Functions {
 
-    /**
-     * Creates webhook on Yotpo
+	/**
+     * Review import execution
      *
-     * @since     1.0.0
-     * @return    void
-     */
-    public function create_yotpo_webhook() {
-
-        // Get all the keys
-        $options    = get_option( 'yotpo_reviews_settings' );
-        $app_key    = $options['yotpo_app_key'] ?? '';
-        $auth_token = new Yotpo_Reviews_Import();
-        $auth_token = $auth_token->yotpo_auth_token();
-
-        $webhook_data = array(
-            'url'        => plugin_dir_url(__FILE__) . 'class-yotpo-reviews-webhook-callback.php?type=yp_webhook',
-            'event_name' => 'review_create'
-        );
-        $webhook_data = json_encode($webhook_data);
-
-        $curl = curl_init();
-        $url = 'https://api.yotpo.com/apps/' . $app_key . '/webhooks?utoken=' . $auth_token['access_token'];
-        curl_setopt_array($curl, array(
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'POST',
-            CURLOPT_POSTFIELDS     => $webhook_data,
-            CURLOPT_HTTPHEADER     => array(
-                'Accept: application/json',
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        $response = json_decode($response, true);
-
-        return $response;
-    }
-
-
-    /**
-     * Webhook execution
+     * Executes the review import and inserts a row into the log table.
      *
-     * Executes the webhook callback and inserts a row into the log table.
-     *
+     * @since     2.0.0      Updated function name/description to make sense
      * @since     1.0.0
      * @param     string     $method               The method of import done.
      * @param     array      $webhook_response     Response from the webhook.
      * @return    void
      */
-    public function execute_yp_webhook( $method ) {
+    public function execute_import( $method ) {
 
-        global $wpdb;
+		global $wpdb;
 
         $create_reviews = new Yotpo_Reviews_Import();
-        $create_reviews = $create_reviews->create_reviews();
+        $create_reviews = $create_reviews->create_reviews( $method );
 
         list( $data, $total_count, $response ) = $create_reviews;
         date_default_timezone_set('America/New_York');
@@ -100,16 +55,16 @@ class Yotpo_Reviews_Webhook_Functions {
         $skipped         = $total_count - $response_count; // Total reviews retrieved
 
         // Update methods to be "words"
-        $method_type = ucwords( str_replace('_', ' ', $method) );
+        $method_type = $method ? ucwords( str_replace('_', ' ', $method) ) : 'Scheduled Run';
 
         // Insert log into database
         $wpdb->query(
-           $wpdb->prepare(
-              "INSERT INTO `wp_yotpo_review_log`
-              ( id, date, total, imported, skipped_exists, skipped_none, deleted, method )
-              VALUES ( %d, %s, %d, %d, %d, %d, %d, %s )",
-              '', $date, $total_count, $imported_count, $duplicate_count, $skipped, $deleted_count, $method_type
-           )
+           	$wpdb->prepare(
+				"INSERT INTO `wp_yotpo_review_log`
+				( id, date, total, imported, skipped_exists, skipped_none, deleted, method )
+				VALUES ( %d, %s, %d, %d, %d, %d, %d, %s )",
+				'', $date, $total_count, $imported_count, $duplicate_count, $skipped, $deleted_count, $method_type
+           	)
         );
 
         // If manually done, return the data back to the form result.
@@ -126,7 +81,7 @@ class Yotpo_Reviews_Webhook_Functions {
      * This is done so orders can be sent off to Yotpo
      *
      * @since     1.5.0
-     * @return    void
+     * @return    array    $response     The response from the webhook API.
      */
     public function create_wc_webhook() {
 
@@ -139,8 +94,6 @@ class Yotpo_Reviews_Webhook_Functions {
         foreach( $results as $result ) :
             if ( strpos($result->name, $hook_name) !== false ) return;
         endforeach;
-
-
 
         // Get all the keys
         $key    = defined('WC_CK') ? WC_CK : define('WC_CK', '');
@@ -191,7 +144,8 @@ class Yotpo_Reviews_Webhook_Functions {
      * This is done so orders can be sent off to Yotpo
      *
      * @since     1.5.0
-     * @return    void
+	 * @param     string     $data         The data from the webhook.
+     * @return    array	     $response     The response from the webhook API.
      */
     public function execute_wc_webhook( $data ) {
 
@@ -306,7 +260,7 @@ class Yotpo_Reviews_Webhook_Functions {
 
         // Send order off to Yotpo
         $curl = curl_init();
-        $url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders/' . $yotpo_order_id;
+        $url  = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders/' . $yotpo_order_id;
         curl_setopt_array($curl, array(
             CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -326,110 +280,8 @@ class Yotpo_Reviews_Webhook_Functions {
 
         $response = curl_exec($curl);
         curl_close($curl);
-
-        // file_put_contents('./log_'.date("j.n.Y").'.log', $response . ' - ' . $order_id, FILE_APPEND);
-
         $response = json_decode($response, true);
-        return $response;
 
-        // $yotpo_id = $response->order->yotpo_id;
-
-        // Add Yotpo Order ID
-        // update_post_meta( $order->id, '_yotpo_order_id', $yotpo_id );
-
-        // Make order fulfilled for Yotpo
-        // $this->yotpo_order_fulfillment($order, $yotpo_id);
-    }
-
-
-
-    public function yotpo_order_fulfillment( $order, $yotpo_id ) {
-
-        if ( empty( $yotpo_id ) || empty( $order ) ) return;
-
-        // $order_response = json_decode(stripslashes($response));
-        // $yotpo_id = $order_response->order->yotpo_id ?? '';
-
-        // if ( !$yotpo_id ) return;
-
-        file_put_contents('./log_'.date("j.n.Y").'.log', $yotpo_id . ' - ' . $order, FILE_APPEND);
-
-        // Line item
-        foreach( $order->line_items as $item ) :
-
-            $product = wc_get_product($item->product_id);
-            $sku     = $product->get_sku();
-
-            $fulfilled_items[] = array(
-                'external_product_id' => $sku,
-                'quantity'            => $item->quantity
-            );
-
-        endforeach;
-
-
-        // Tracking number
-        $tracking_number = $order->meta_data;
-
-        $result = null;
-        foreach ($tracking_number as $object) :
-            if (str_contains($object->key, 'shipment-')) :
-                $result = $object;
-                break;
-            endif;
-        endforeach;
-        unset($object);
-        $meta_data = $result ?? false;
-
-        $tracking_number = $meta_data->value->tracking_number ?? '';
-
-
-        // Put all the order info together
-        $post_fields = array(
-            'fulfillment' => array(
-                'external_id'      => $order->id,
-                'fulfillment_date' => $order->date_completed,
-                'status'           => $order->status,
-                'shipment_info'       => array(
-                    'shipment_status'  => 'label_printed',
-                    'tracking_number'  => $tracking_number
-                ),
-                'fulfilled_items' => $fulfilled_items
-            )
-        );
-        $post_fields = json_encode($post_fields);
-
-        // Get all the Yotpo keys
-        $options    = get_option( 'yotpo_reviews_settings' );
-        $app_key    = $options['yotpo_app_key'] ?? '';
-        $auth_token = new Yotpo_Reviews_Import();
-        $auth_token = $auth_token->yotpo_auth_token('store');
-
-
-        // Create Order Fulfillment
-        $curl = curl_init();
-        $url = 'https://api.yotpo.com/core/v3/stores/' . $app_key . '/orders/' . $yotpo_id . '/fulfillments';
-        curl_setopt_array($curl, array(
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'POST',
-            CURLOPT_POSTFIELDS     => $post_fields,
-            CURLOPT_HTTPHEADER     => array(
-                'Accept: application/json',
-                'Content-Type: application/json',
-                'X-Yotpo-Token: ' . $auth_token['access_token']
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        $response = json_encode($response, true);
         return $response;
     }
 

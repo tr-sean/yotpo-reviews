@@ -179,7 +179,7 @@
         /**
          * Main template override
          *
-         * Special funcionality needed to override main comment template.
+         * Special functionality needed to override main comment template.
          *
          * @since    1.0.0
          * @param    string    $template
@@ -218,17 +218,17 @@
 
     	    // Gather form data
     	    $post_fields = array(
-    	        'appkey'              => $app_key,
-    	        'domain'              => get_bloginfo('url'),
-    	        'sku'                 => $_POST['product_id'],
-    	        'product_title'       => $_POST['product_title'],
-    	        'product_url'         => $_POST['product_url'],
-    	        'product_image_url'   => $_POST['product_image'],
-    	        'display_name'        => $review['name'],
-    	        'email'               => $review['email'],
-    	        'review_content'      => $review['content'],
-    	        'review_title'        => $review['subject'],
-    	        'review_score'        => $review['rating']
+				'appkey'            => $app_key,
+				'domain'            => get_bloginfo('url'),
+				'sku'               => $_POST['product_id'],
+				'product_title'     => $_POST['product_title'],
+				'product_url'       => $_POST['product_url'],
+				'product_image_url' => $_POST['product_image'],
+				'display_name'      => $review['name'],
+				'email'             => $review['email'],
+				'review_content'    => $review['content'],
+				'review_title'      => $review['subject'],
+				'review_score'      => $review['rating']
     	    );
     	    $post_fields = json_encode($post_fields);
 
