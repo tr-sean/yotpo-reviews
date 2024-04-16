@@ -5,7 +5,7 @@ Tags: comments, yotpo, woocommerce, product reviews
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 8.0
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Please see the [WooCommerce Documentation](https://woocommerce.com/document/wooc
 The styling for this plugin is basic, as it would be expected for you to update the styling to match your theme. You can override the template by copying the template file from the plugin folder to your theme's WooCommerce template override folder (example: `wp-content/themes/your-theme/woocommerce/`). These files are located at: `wp-content/plugins/yotpo-reviews/templates/public/templates/`.
 
 == Changelog ==
+
+=2.0.1=
+* Localized admin CSS to the plugin so it doesn't overwrite global CSS.
 
 =2.0.0=
 * Fixed import stuff so it actually works.

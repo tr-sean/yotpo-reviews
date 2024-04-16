@@ -45,9 +45,9 @@
 		color: #6c757d;
 	}
 
-	fieldset { margin-bottom: 30px; }
+	.yotpo-fieldset { margin-bottom: 30px; }
 
-	legend {
+	.yotpo-legend {
 		width: 100%;
 		padding: 0;
 		margin: .8rem 0;
@@ -58,13 +58,7 @@
 	/* Firefox-specific hack to override awkward fieldset styling */
 	.-moz- fieldset { display: table-cell; }
 
-	[type="text"],
-	[type="url"],
-	[type="email"],
-	[type="tel"],
-	[type="search"],
-	[type="password"],
-	textarea {
+	.yotpo-input-field {
 		display: block;
 		width: 100%;
 		padding: .375rem .75rem;
@@ -82,7 +76,7 @@
 		border-radius: .25rem;
 	}
 
-	select {
+	.yotpo-input-select {
 		display: block;
 		width: 100%;
 		padding: .375rem 2.25rem .375rem .75rem;
@@ -104,12 +98,7 @@
 		appearance: none;
 	}
 
-	[type="text"]:focus,
-	[type="url"]:focus,
-	[type="email"]:focus,
-	[type="tel"]:focus,
-	[type="search"]:focus,
-	[type="password"]:focus {
+	.yotpo-input-field:focus {
 		color: #212529;
 		background-color: #FFF;
 		border-color: var(--color-blue-light);
@@ -118,13 +107,13 @@
 	}
 
 	/* Remove number arrows in number fields */
-	input::-webkit-outer-spin-button,
-	input::-webkit-inner-spin-button {
+	.yotpo-input-field::-webkit-outer-spin-button,
+	.yotpo-input-field::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
 
-	input[type=number] { -moz-appearance:textfield; }
+	.yotpo-input-field[type=number] { -moz-appearance:textfield; }
 
 	.helper {
 		font-size: .9em;
