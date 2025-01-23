@@ -124,7 +124,7 @@ class Yotpo_Reviews_Import {
 
 				// Check if API response is valid
 				if (!$response) :
-					error_log('Error: Failed to fetch data from API'); // Handle error
+					error_log('Error: Failed to fetch data from Yotpo API'); // Handle error
 					break;
 				endif;
 
@@ -143,7 +143,7 @@ class Yotpo_Reviews_Import {
 
 		else :
 
-			$response = $this->yotpo_get_reviews_curl( $app_key, $auth_token['access_token'], 1, date('Ymd',strtotime('-1 days')) );
+			$response = $this->yotpo_get_reviews_curl( $app_key, $auth_token['access_token'], 1, date('Y-m-d',strtotime('-1 days')) );
 			return $response['reviews'];
 
 		endif;
@@ -317,7 +317,7 @@ class Yotpo_Reviews_Import {
 			$final_review_data = json_encode($review_data);
 
 			// Exit if empty
-			if ( empty( $review_data['create'] ) && empty( $review_data['delete'] ) ) return array($data, $total_count, $review_data);
+			if ( empty( $review_data['create'] ) && empty( $review_data['delete'] ) ) continue;
 
 			$curl = curl_init();
 			$url  = get_bloginfo('url') . '/wp-json/wc/v3/products/reviews/batch' . '?consumer_key=' . WC_CK . '&consumer_secret=' . WC_SK;
@@ -360,9 +360,10 @@ class Yotpo_Reviews_Import {
 			endif; endforeach;
 
 			// Return the data to display in the table
-			return array($data, $total_count, $response);
 
 		$i ++; endforeach;
+
+		return array($data, $total_count, $response);
 	}
 
 
